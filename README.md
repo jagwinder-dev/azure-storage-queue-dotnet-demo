@@ -1,67 +1,56 @@
-# AzureStorageQueueDemo
+This project demonstrates how to use Azure Storage Queue to implement background processing using the Producer-Consumer pattern in a .NET application.
 
-A .NET 8 learning project that demonstrates Azure Storage Queue with a producer Web API and a consumer Worker Service.
+## Problem
 
-## Projects
+In a typical application, handling tasks like sending emails or updating inventory inside an API request increases response time and reduces scalability.
 
-- `QueueProducer.Api` exposes endpoints that create JSON queue messages.
-- `QueueConsumer.Worker` polls the queue, processes messages, and deletes them only after successful processing.
-- `QueueDemo.Shared` contains the queue message model, queue constants, configuration, and queue service abstraction.
+## Solution
 
-## What Azure Storage Queue Is
+This demo shows how to:
+- Offload non-critical tasks to Azure Storage Queue
+- Process them asynchronously using a background worker
+- Improve performance and scalability
 
-Azure Storage Queue is a simple, durable message queue in an Azure Storage account. It is useful when one part of a system needs to hand work to another part asynchronously. The producer can enqueue work quickly, and the consumer can process it later at its own pace.
+---
 
-This demo uses the queue `order-processing-queue` and stores each message as JSON.
+## Architecture
 
-## Producer vs Consumer
+- **API (Producer)**  
+  Accepts requests and sends messages to Azure Storage Queue  
 
-The producer is the API. It accepts order requests and sends `OrderProcessingMessage` records to Azure Storage Queue.
+- **Worker (Consumer)**  
+  Reads messages from the queue and processes them  
 
-The consumer is the worker. It receives one visible message at a time, simulates processing, records the message as completed for idempotency, and then deletes the queue message.
+- **Azure Storage Queue**  
+  Acts as a buffer between API and background processing  
 
-## Message Contract
+---
 
-```json
-{
-  "messageId": "unique-message-id",
-  "orderId": "ORD-1001",
-  "customerEmail": "customer@example.com",
-  "action": "CreateOrder",
-  "createdAt": "2026-04-25T00:00:00+00:00"
-}
-```
+## Flow
 
-## Configuration
+1. Client sends request to API  
+2. API validates and saves required data  
+3. API sends a message to Azure Storage Queue  
+4. Worker reads the message  
+5. Worker processes the task (email, inventory, etc.)  
+6. Message is deleted after successful processing  
 
-Both runnable projects use `appsettings.json`:
+---
 
-```json
-{
-  "QueueSettings": {
-    "StorageConnectionString": "UseDevelopmentStorage=true",
-    "QueueName": "order-processing-queue",
-    "VisibilityTimeoutSeconds": 15,
-    "PollingIntervalSeconds": 3,
-    "ProcessingDelaySeconds": 3,
-    "SimulateFailure": false,
-    "ProcessedMessagesFilePath": "processed-messages.json"
-  }
-}
-```
+## Tech Stack
 
-Use `UseDevelopmentStorage=true` with Azurite. For Azure, replace it with a real Storage Account connection string.
+- .NET 8 / ASP.NET Core  
+- Azure Storage Queue  
+- Worker Service  
+- Azurite (local storage emulator)  
 
-## Run Azurite
+---
 
-From the solution folder:
+## Run Locally
 
-```powershell
-docker compose up -d
-```
+### 1. Start Azurite (Azure Storage Emulator)
 
-Azurite exposes queues on port `10001`.
-
+<<<<<<< HEAD
 ## Run The Producer API
 
 ```powershell
@@ -173,3 +162,7 @@ Interview summary:
 - `SimulateFailure` demonstrates retry behavior without changing code.
 - `ProcessingDelaySeconds` and `VisibilityTimeoutSeconds` make timing behavior visible.
 - Azurite gives a local Azure Storage-compatible development loop.
+=======
+```bash
+docker-compose up -d
+>>>>>>> 77a2621 (Update ReadMe with project details)
